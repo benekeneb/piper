@@ -49,26 +49,40 @@ Robot::Robot(ros::NodeHandle nh)
     sensor_base_sigma = 0.0001;
 
   // arm's base pose (relative to robot base if mobile_base_ is true)
+  ROS_INFO("Orientation Vector %f ,%f, %f, %f", orientation_[3], orientation_[0], orientation_[1], orientation_[2]);
+  ROS_INFO("Position Vector %f ,%f, %f", position_[0], position_[1], position_[2]);
+
+  // gtsam::Rot3::Quaternion(orientation_[3], orientation_[0], orientation_[1], orientation_[2]);
+  // gtsam::Point3(getVector(position_));
+  // ROS_INFO("success");
+
   arm_base_ = gtsam::Pose3(gtsam::Rot3::Quaternion(orientation_[3], orientation_[0], orientation_[1], 
     orientation_[2]), gtsam::Point3(getVector(position_)));
+
+  ROS_INFO("arm_base success");
+
   
   // spheres to approximate robot body: js - link id, rs - radius, [xs, ys, zs] - center
   for (size_t i=0; i<js_.size(); i++)
     spheres_data_.push_back(gpmp2::BodySphere(js_[i], rs_[i], gtsam::Point3(xs_[i], ys_[i], zs_[i])));
   
+  ROS_INFO("sphere success");
+
   // generate arm/mobile arm
-  if (!mobile_base_)
-  {
-    DOF_arm_ = DOF_;
-    arm = gpmp2::ArmModel(gpmp2::Arm(DOF_arm_, getVector(a_), getVector(alpha_), getVector(d_), arm_base_, getVector(theta_)), 
-      spheres_data_);
-  }
-  else
-  {
-    DOF_arm_ = DOF_-3;
-    marm = gpmp2::Pose2MobileArmModel(gpmp2::Pose2MobileArm(gpmp2::Arm(DOF_arm_, getVector(a_), getVector(alpha_), getVector(d_), 
-      gtsam::Pose3(), getVector(theta_)), arm_base_), spheres_data_);
-  }
+  // if (!mobile_base_)
+  // {
+  //   DOF_arm_ = DOF_;
+  //   arm = gpmp2::ArmModel(gpmp2::Arm(DOF_arm_, getVector(a_), getVector(alpha_), getVector(d_), arm_base_, getVector(theta_)), 
+  //     spheres_data_);
+  // }
+  // else
+  // {
+  //   DOF_arm_ = DOF_-3;
+  //   marm = gpmp2::Pose2MobileArmModel(gpmp2::Pose2MobileArm(gpmp2::Arm(DOF_arm_, getVector(a_), getVector(alpha_), getVector(d_), 
+  //     gtsam::Pose3(), getVector(theta_)), arm_base_), spheres_data_);
+  // }
+
+  ROS_INFO("generate arm/mobile arm success");
 }
 
 /* ************************************************************************** */
